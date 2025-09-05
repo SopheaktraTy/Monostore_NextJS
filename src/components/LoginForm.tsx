@@ -6,6 +6,7 @@ import { LoginDto } from "../types/authType"
 import { useRouter } from "next/router"
 import { jwtDecode } from "jwt-decode"
 import { JwtPayload } from "../types/authType"
+import Link from "next/link"
 
 const LoginForm = () => {
   const [form, setForm] = useState<LoginDto>({
@@ -23,68 +24,67 @@ const LoginForm = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  setMessage("");
+    e.preventDefault()
+    setError("")
+    setMessage("")
 
-  // Optional: skip if already logged in
-  const existingToken = localStorage.getItem("accessToken");
-  if (existingToken) {
-    try {
-      const payload = jwtDecode<JwtPayload>(existingToken);
-      const role = payload?.role?.toLowerCase();
+    // Optional: skip if already logged in
+    const existingToken = localStorage.getItem("accessToken")
+    if (existingToken) {
+      try {
+        const payload = jwtDecode<JwtPayload>(existingToken)
+        const role = payload?.role?.toLowerCase()
 
-      switch (role) {
-        case "admin":
-          router.push("/admin");
-          return;
-        case "customer":
-          router.push("/customer");
-          return;
-        default:
-          setError("Unknown role. Cannot redirect.");
-          return;
+        switch (role) {
+          case "admin":
+            router.push("/admin")
+            return
+          case "customer":
+            router.push("/customer")
+            return
+          default:
+            setError("Unknown role. Cannot redirect.")
+            return
+        }
+      } catch (decodeError) {
+        console.error("JWT decode error:", decodeError)
+        setError("Invalid or expired token.")
+        return
       }
-    } catch (decodeError) {
-      console.error("JWT decode error:", decodeError);
-      setError("Invalid or expired token.");
-      return;
+    }
+
+    setLoading(true)
+
+    try {
+      const res = await login(form)
+      console.log("Login response:", res)
+      setMessage(res.message)
+
+      // 🔐 If login is successful but tokens are not returned yet (waiting for OTP)
+      localStorage.setItem("pendingEmail", form.email) // Store email for verification
+      router.push("/verify-otp") // Redirect to OTP verification page
+    } catch (err: any) {
+      console.error("Login error:", err.response?.data || err.message || err)
+      const msg = err.response?.data?.message
+      setError(Array.isArray(msg) ? msg.join(", ") : msg || "Login failed")
+    } finally {
+      setLoading(false)
     }
   }
-
-  setLoading(true);
-
-  try {
-    const res = await login(form);
-    console.log("Login response:", res);
-    setMessage(res.message);
-
-    // 🔐 If login is successful but tokens are not returned yet (waiting for OTP)
-    localStorage.setItem("pendingEmail", form.email); // Store email for verification
-    router.push("/verify-otp"); // Redirect to OTP verification page
-  } catch (err: any) {
-    console.error("Login error:", err.response?.data || err.message || err);
-    const msg = err.response?.data?.message;
-    setError(Array.isArray(msg) ? msg.join(", ") : msg || "Login failed");
-  } finally {
-    setLoading(false);
-  }
-};
 
   return (
     <div className="min-h-screen  bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-4">
         {/* Logo */}
         <div className="text-center flex flex-col items-center">
-          <div className="w-full flex flex-col items-center pb-6">
+          <Link href="http://localhost:3000">
             <Image
               src="/logo/Logo No Text.svg"
               alt="Logo"
               width={64}
               height={64}
-              
             />
-          </div>
+          </Link>
           <h2 className="text-2xl font-bold text-gray-900">Log In</h2>
           <p className="mt-2 text-sm text-gray-600">
             Don’t have an account?{" "}
@@ -182,7 +182,6 @@ const LoginForm = () => {
               </div>
             </div>
           )}
-
 
           {/* Submit */}
           <button
