@@ -44,17 +44,22 @@ const CustomerCartPopupSidebarComponent = ({
     const item = cartItems[index]
     const maxStock = item.product.total_quantity
     const newQuantity = item.quantity + delta
+
     if (newQuantity < 1 || newQuantity > maxStock) return
 
     try {
       await updateCartItem(item.id, {
-        size: item.size,
-        quantity: newQuantity
+        quantity: newQuantity,
+        size: item.size
       })
+
       await fetchCart()
       onCartChange()
-    } catch (error) {
-      console.error("Failed to update cart item:", error)
+    } catch (error: any) {
+      console.error(
+        "❌ Failed to update cart item:",
+        error.response?.data || error.message
+      )
     }
   }
 
