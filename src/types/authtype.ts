@@ -62,6 +62,7 @@ export interface User {
   phone_number?: number | null
   date_of_birth?: string | null // ISO string
   status: "active" | "not_verified" | "suspended"
+  is_verified: boolean
   role: {
     id: string
     name: string
