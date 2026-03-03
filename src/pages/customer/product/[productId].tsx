@@ -42,7 +42,7 @@ const CustomerProductDetailPage = () => {
       {showCartSidebar && (
         <CartPopupSidebar
           onClose={() => setShowCartSidebar(false)}
-          onCartChange={() => {}}
+          onCartChange={() => { }}
         />
       )}
 
