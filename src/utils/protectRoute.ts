@@ -13,10 +13,14 @@ export const protectRoute = async (options: Options = {}): Promise<void> => {
 
   const accessToken = localStorage.getItem("accessToken")
   const refreshToken = localStorage.getItem("refreshToken")
-  const redirectTo = options.redirectTo || "/login"
+
+  // 🔐 Authentication redirect ALWAYS goes to /login
+  const authRedirect = "/login"
+  // 🚫 Authorization redirect (wrong role) goes to options.redirectTo or defaults to /forbidden-access
+  const authzRedirect = options.redirectTo || "/forbidden-access"
 
   if (!accessToken || !refreshToken) {
-    return redirectToPage(redirectTo)
+    return redirectToPage(authRedirect)
   }
 
   try {
@@ -29,14 +33,14 @@ export const protectRoute = async (options: Options = {}): Promise<void> => {
 
     // 🔄 ✅ If token expires in <= 15 minutes, refresh early
     if (timeLeft <= 900) {
-      await refreshTokens(refreshToken, options.requiredRole, redirectTo)
+      await refreshTokens(refreshToken, options.requiredRole, authzRedirect)
       return
     }
 
-    // 🔒 Role check
-    if (options.requiredRole && decoded.role !== options.requiredRole) {
+    // 🔒 Role check (Authorization)
+    if (options.requiredRole && decoded.role?.toLowerCase() !== options.requiredRole.toLowerCase()) {
       alert(`Access denied. Required role: ${options.requiredRole}`)
-      return redirectToPage(redirectTo)
+      return redirectToPage(authzRedirect)
     }
 
     // 🔄 Always check if user is suspended
@@ -44,17 +48,17 @@ export const protectRoute = async (options: Options = {}): Promise<void> => {
     if (user.status?.toLowerCase() === "suspended") {
       alert("Your account has been suspended.")
       clearTokens()
-      return redirectToPage(redirectTo)
+      return redirectToPage(authRedirect)
     }
   } catch {
     // ⏳ Token expired or invalid – refresh attempt
-    await refreshTokens(refreshToken, options.requiredRole, redirectTo)
+    await refreshTokens(refreshToken, options.requiredRole, authzRedirect)
   }
 
   async function refreshTokens(
     refreshToken: string,
     requiredRole?: string,
-    redirectTo?: string
+    authzRedirect?: string
   ) {
     try {
       const res = await axios.post("/auth/refresh-token", {
@@ -72,10 +76,10 @@ export const protectRoute = async (options: Options = {}): Promise<void> => {
       // ⏳ If new token is expired somehow → fail
       if (decoded.exp < Date.now() / 1000) throw new Error("New token expired")
 
-      // 🔒 Role check again after refresh
-      if (requiredRole && decoded.role !== requiredRole) {
+      // 🔒 Role check again after refresh (Authorization)
+      if (requiredRole && decoded.role?.toLowerCase() !== requiredRole.toLowerCase()) {
         alert(`Access denied. Required role: ${requiredRole}`)
-        return redirectToPage(redirectTo || "/login")
+        return redirectToPage(authzRedirect || "/forbidden-access")
       }
 
       // 🔄 Check suspended user again after refresh
@@ -83,12 +87,12 @@ export const protectRoute = async (options: Options = {}): Promise<void> => {
       if (user.status?.toLowerCase() === "suspended") {
         alert("Your account has been suspended.")
         clearTokens()
-        return redirectToPage(redirectTo || "/login")
+        return redirectToPage("/login")
       }
     } catch {
-      // ❌ Refresh failed – clear tokens and redirect
+      // ❌ Refresh failed (Authentication failure) – clear tokens and redirect to login
       clearTokens()
-      redirectToPage(redirectTo || "/login")
+      redirectToPage("/login")
     }
   }
 
