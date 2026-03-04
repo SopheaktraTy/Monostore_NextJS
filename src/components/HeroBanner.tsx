@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
+import { Image as ImageIcon } from "lucide-react"
 import { useKeenSlider } from "keen-slider/react"
 import "keen-slider/keen-slider.min.css"
 import { HeroBannerDto } from "../types/heroBannerType"
@@ -52,16 +53,16 @@ export default function HeroBannerComponent() {
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>(
     banners.length > 0
       ? {
-          loop: true,
-          mode: "snap",
-          slides: { perView: 1 },
-          slideChanged(s) {
-            setCurrentSlide(s.track.details.rel)
-          },
-          created() {
-            setLoaded(true)
-          }
+        loop: true,
+        mode: "snap",
+        slides: { perView: 1 },
+        slideChanged(s) {
+          setCurrentSlide(s.track.details.rel)
+        },
+        created() {
+          setLoaded(true)
         }
+      }
       : undefined, // ✅ use undefined instead of null
     [AutoplayPlugin(2800)]
   )
@@ -95,7 +96,20 @@ export default function HeroBannerComponent() {
   }
 
   if (banners.length === 0) {
-    return <div className="text-center py-10">No hero banners found.</div>
+    return (
+      <div className="w-full flex flex-col items-center justify-center text-center bg-white rounded-lg">
+        <div className="p-4 bg-gray-50 rounded-full mb-4">
+          <ImageIcon className="w-10 h-10 text-gray-300" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+          No featured banners
+        </h3>
+        <p className="text-gray-500 text-sm max-w-xs px-4">
+          Check back soon to see our latest featured products and special
+          offers!
+        </p>
+      </div>
+    )
   }
 
   return (
@@ -131,9 +145,8 @@ export default function HeroBannerComponent() {
             <button
               key={idx}
               onClick={() => slider.current?.moveToIdx(idx)}
-              className={`w-3 h-3 rounded-full transition-colors ${
-                currentSlide === idx ? "bg-blue-600" : "bg-gray-300"
-              }`}
+              className={`w-3 h-3 rounded-full transition-colors ${currentSlide === idx ? "bg-blue-600" : "bg-gray-300"
+                }`}
             />
           ))}
         </div>
