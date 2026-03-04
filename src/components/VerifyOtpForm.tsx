@@ -70,7 +70,7 @@ export default function VerifyOtpForm() {
         localStorage.removeItem("pendingEmail")
         const payload = jwtDecode<JwtPayload>(accessToken)
 
-        switch (payload.role) {
+        switch (payload.role?.toLowerCase()) {
           case "admin":
             router.push("/admin")
             break
@@ -111,9 +111,9 @@ export default function VerifyOtpForm() {
 
   const maskedEmail = email
     ? email.replace(
-        /(.{2})(.*)(?=@)/,
-        (_, a, b) => `${a}${"*".repeat(b.length)}`
-      )
+      /(.{2})(.*)(?=@)/,
+      (_, a, b) => `${a}${"*".repeat(b.length)}`
+    )
     : ""
 
   return (
