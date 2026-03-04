@@ -152,9 +152,16 @@ const CustomerCartPopupSidebarComponent = ({
 
         <div className="flex-1 overflow-y-auto px-6">
           {cartItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-              <ShoppingBag className="h-16 w-16 mb-4 text-gray-300" />
-              <p>Your cart is empty</p>
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="p-4 bg-gray-50 rounded-full mb-4">
+                <ShoppingBag className="h-12 w-12 text-gray-300" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                Your cart is empty
+              </h3>
+              <p className="text-gray-500 text-sm max-w-[200px]">
+                Looks like you haven&apos;t added anything to your cart yet.
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -266,11 +273,10 @@ const CustomerCartPopupSidebarComponent = ({
               <button
                 onClick={handleCheckout}
                 disabled={selectedItems.size === 0}
-                className={`w-full py-3 px-4 rounded-full text-xs font-medium transition-colors ${
-                  selectedItems.size === 0
+                className={`w-full py-3 px-4 rounded-full text-xs font-medium transition-colors ${selectedItems.size === 0
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
+                  }`}
               >
                 CHECK OUT
               </button>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { getMyOrders } from "../../services/orderService"
 import { Order } from "../../types/orderType"
+import { ShoppingBag } from "lucide-react"
+import Link from "next/link"
 
 const CustomerOrderListComponent = () => {
   const [orders, setOrders] = useState<Order[]>([])
@@ -26,15 +28,34 @@ const CustomerOrderListComponent = () => {
     return isNaN(date.getTime())
       ? "Invalid Date"
       : date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric"
-        })
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      })
   }
 
-  if (loading) return <p className="p-4">Loading orders...</p>
+
   if (orders.length === 0)
-    return <p className="p-4 text-gray-500">You have no orders yet.</p>
+    return (
+      <div className="flex flex-col items-center justify-center w-full text-center bg-white rounded-lg shadow-sm">
+        <div className="p-4 bg-gray-50 rounded-full mb-4">
+          <ShoppingBag className="w-12 h-12 text-gray-400" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          You have no orders yet
+        </h3>
+        <p className="text-gray-500 max-w-xs mb-6 text-sm">
+          Looks like you haven&apos;t placed any orders. Start browsing our
+          collection to find something you love.
+        </p>
+        <Link
+          href="/customer"
+          className="px-6 py-2 bg-blue-700 text-white rounded-full text-sm font-semibold hover:bg-blue-800 transition-colors"
+        >
+          Start Shopping
+        </Link>
+      </div>
+    )
 
   return (
     <div className=" w-full p-4 bg-white rounded-lg">

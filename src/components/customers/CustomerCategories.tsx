@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/router"
 import { getAllCategories } from "../../services/categoryService"
 import { CategoryDto } from "../../types/categoryType"
+import { Inbox } from "lucide-react"
 
 const CustomerCategoriesComponent = () => {
   const [categories, setCategories] = useState<CategoryDto[]>([])
@@ -70,8 +71,21 @@ const CustomerCategoriesComponent = () => {
     )
   }
 
-  if (error) {
-    return <div className="w-full py-8 text-center text-red-500">{error}</div>
+  if (categories.length === 0) {
+    return (
+      <div className="w-full py-12 flex flex-col items-center justify-center text-center bg-white rounded-lg shadow-sm">
+        <div className="p-4 bg-gray-50 rounded-full mb-4">
+          <Inbox className="w-10 h-10 text-gray-400" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+          No categories found
+        </h3>
+        <p className="text-gray-500 text-sm max-w-xs px-4">
+          We couldn&apos;t find any categories at the moment. Please check back
+          later.
+        </p>
+      </div>
+    )
   }
 
   return (
