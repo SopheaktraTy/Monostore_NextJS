@@ -58,14 +58,44 @@ const LoginForm = () => {
     try {
       const res = await login(form)
       console.log("Login response:", res)
-      setMessage(res.message)
 
-      // 🔐 If login is successful but tokens are not returned yet (waiting for OTP)
-      localStorage.setItem("pendingEmail", form.email) // Store email for verification
-      router.push("/verify-otp") // Redirect to OTP verification page
+      // 🔐 If tokens are returned immediately (Admin or already verified)
+      if (res.accessToken && res.refreshToken) {
+        localStorage.setItem("accessToken", res.accessToken)
+        localStorage.setItem("refreshToken", res.refreshToken)
+        const payload = jwtDecode<JwtPayload>(res.accessToken)
+        const role = payload?.role?.toLowerCase()
+
+        setMessage("Login successful. Redirecting...")
+        setTimeout(() => {
+          if (role === "admin") {
+            router.push("/admin")
+          } else {
+            router.push("/customer")
+          }
+        }, 1000)
+        return
+      }
+
+      // If no tokens, but message indicates OTP
+      setMessage(res.message)
+      localStorage.setItem("pendingEmail", form.email)
+      router.push("/verify-otp")
     } catch (err: any) {
       console.error("Login error:", err.response?.data || err.message || err)
-      const msg = err.response?.data?.message
+      const errorData = err.response?.data
+      const msg = errorData?.message
+
+      // Handle specific ACCOUNT_NOT_VERIFIED error
+      if (errorData?.error === "ACCOUNT_NOT_VERIFIED") {
+        setMessage(msg)
+        localStorage.setItem("pendingEmail", form.email)
+        setTimeout(() => {
+          router.push("/verify-otp")
+        }, 1500)
+        return
+      }
+
       setError(Array.isArray(msg) ? msg.join(", ") : msg || "Login failed")
     } finally {
       setLoading(false)
