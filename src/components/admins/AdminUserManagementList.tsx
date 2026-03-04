@@ -203,8 +203,7 @@ const UserManagementList: React.FC = () => {
     try {
       const res = await deleteUser(userId)
       setMessage(
-        `🗑️ <strong>${
-          res.email || res.userId
+        `🗑️ <strong>${res.email || res.userId
         }</strong> has been <span class="text-red-600 font-semibold">deleted</span> successfully.`
       )
       setUsers(prev => prev.filter(user => user.id !== userId))
@@ -342,11 +341,10 @@ const UserManagementList: React.FC = () => {
                                     handleToggleSuspend(user.id)
                                     setOpenDropdown(null)
                                   }}
-                                  className={`w-full flex items-center px-4 py-2 text-sm ${
-                                    user.status === "suspended"
-                                      ? "text-green-700 hover:bg-green-50"
-                                      : "text-red-700 hover:bg-red-50"
-                                  }`}
+                                  className={`w-full flex items-center px-4 py-2 text-sm ${user.status === "suspended"
+                                    ? "text-green-700 hover:bg-green-50"
+                                    : "text-red-700 hover:bg-red-50"
+                                    }`}
                                 >
                                   {user.status === "suspended" ? (
                                     <UserCheck className="w-4 h-4 mr-2" />
