@@ -27,7 +27,7 @@ const Footer = () => {
   return (
     <footer className="bg-white">
       {/* Features Section */}
-      <div className="bg-gray-50 py-8 border-t border-gray-200">
+      <div className="bg-gray-50 py-8 border-t border-gray-200 mt-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {/* Fast Delivery */}
