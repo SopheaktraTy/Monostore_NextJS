@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react"
+import { Search } from "lucide-react"
 import { useRouter } from "next/router"
 import { getCategoryById, getAllCategories } from "../services/categoryService"
 import { CategoryDto, CategoryWithProductsDto } from "../types/categoryType"
@@ -179,8 +180,17 @@ const CategoriesWithProductComponent: React.FC = () => {
           </div>
 
           {paginatedProducts.length === 0 && (
-            <div className="text-center text-gray-500 py-16">
-              No products found in this category.
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-lg shadow-sm border border-gray-100">
+              <div className="p-4 bg-gray-50 rounded-full mb-4">
+                <Search className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                No products found
+              </h3>
+              <p className="text-gray-500 text-sm max-w-xs px-4 text-center">
+                No products match your criteria in this category. Try adjusting
+                your filters!
+              </p>
             </div>
           )}
 
@@ -218,11 +228,10 @@ const CategoriesWithProductComponent: React.FC = () => {
                 {[...Array(totalPages)].map((_, i) => (
                   <button
                     key={i}
-                    className={`px-3 py-1 border rounded text-sm ${
-                      currentPage === i + 1
+                    className={`px-3 py-1 border rounded text-sm ${currentPage === i + 1
                         ? "bg-blue-500 text-white border-blue-500"
                         : "bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
+                      }`}
                     onClick={() => setCurrentPage(i + 1)}
                   >
                     {i + 1}

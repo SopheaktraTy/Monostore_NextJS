@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, PackageOpen } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -103,6 +103,23 @@ const ProductSectionPage: React.FC = () => {
   if (error)
     return <div className="text-center text-red-600 py-10">{error}</div>
 
+  if (sectionPages.length === 0) {
+    return (
+      <div className="w-full py-20 flex flex-col items-center justify-center text-center bg-white rounded-lg shadow-sm mt-10 ">
+        <div className="p-4 bg-gray-50 rounded-full mb-4">
+          <PackageOpen className="w-12 h-12 text-gray-400" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          No product sections found
+        </h3>
+        <p className="text-gray-500 max-w-sm px-6">
+          There are currently no featured product sections to display. Explore
+          our categories instead!
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8 py-6 w-full">
       {sectionPages.map(section => (
@@ -138,11 +155,10 @@ const ProductSectionPage: React.FC = () => {
             <div className="flex-1 min-w-0 w-full relative">
               {/* Left Button */}
               <button
-                className={`absolute -left-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full shadow z-10 transition ${
-                  scrollStates[section.id]?.canScrollLeft
-                    ? "bg-gray-200 hover:bg-gray-300"
-                    : "bg-gray-100 opacity-50 cursor-not-allowed"
-                }`}
+                className={`absolute -left-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full shadow z-10 transition ${scrollStates[section.id]?.canScrollLeft
+                  ? "bg-gray-200 hover:bg-gray-300"
+                  : "bg-gray-100 opacity-50 cursor-not-allowed"
+                  }`}
                 onClick={() => scroll(section.id, "left")}
                 disabled={!scrollStates[section.id]?.canScrollLeft}
               >
@@ -180,11 +196,10 @@ const ProductSectionPage: React.FC = () => {
 
               {/* Right Button */}
               <button
-                className={`absolute -right-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full shadow z-10 transition ${
-                  scrollStates[section.id]?.canScrollRight
-                    ? "bg-gray-200 hover:bg-gray-300"
-                    : "bg-gray-100 opacity-50 cursor-not-allowed"
-                }`}
+                className={`absolute -right-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full shadow z-10 transition ${scrollStates[section.id]?.canScrollRight
+                  ? "bg-gray-200 hover:bg-gray-300"
+                  : "bg-gray-100 opacity-50 cursor-not-allowed"
+                  }`}
                 onClick={() => scroll(section.id, "right")}
                 disabled={!scrollStates[section.id]?.canScrollRight}
               >
